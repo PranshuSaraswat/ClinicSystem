@@ -1,10 +1,10 @@
-package com.clinic.appointmentservice;
+package com.clinic.apigateway;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Disabled
-class AppointmentServiceApplicationTests {
+class ApiGatewayApplicationTests {
 
     @Test
     void contextLoads() {

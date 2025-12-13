@@ -5,6 +5,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.clinic.appointmentservice.entity.Appointment;
 import com.clinic.appointmentservice.repository.AppointmentRepository;
+import com.clinic.appointmentservice.model.Notification;
+
 
 @Service
 public class AppointmentService {
@@ -19,18 +21,34 @@ public class AppointmentService {
 
     public Appointment bookAppointment(Appointment appointment) {
 
-        // Check patient exists
+    // Check patient exists
         restTemplate.getForObject(
             "http://PATIENT-SERVICE/patients/" + appointment.getPatientId(),
             Object.class
         );
 
-        // Check doctor exists
+    // Check doctor exists
         restTemplate.getForObject(
             "http://DOCTOR-SERVICE/doctors/" + appointment.getDoctorId(),
             Object.class
         );
 
-        return repo.save(appointment);
+    // Save appointment
+        Appointment saved = repo.save(appointment);
+
+    // Send notification
+        Notification notification = new Notification(
+            "Appointment booked successfully",
+            "Patient ID: " + appointment.getPatientId()
+        );
+
+        restTemplate.postForObject(
+            "http://NOTIFICATION-SERVICE/notifications",
+            notification,
+        Void.class
+        );
+
+        return saved;
     }
+
 }
