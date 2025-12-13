@@ -1,233 +1,147 @@
-🏥 Clinic Management System – Microservices Backend
+0d1 Clinic Management System 3e5 4bb
+
+This project is a **Spring Boot microservices-based backend** for a Clinic Management System. It demonstrates service discovery, independent services, database isolation, inter-service communication, and API Gateway routing.
+
+---
+
+## 4c1 Monorepo Structure
+
+This repository contains the following microservices:
+
+- **eureka-server**: Service Registry (Port: 8761)
+- **doctor-service**: Manages doctors (Port: 8081)
+- **patient-service**: Manages patients (Port: 8082)
+- **appointment-service**: Manages appointments (Port: 8083)
+- **notification-service**: Sends notifications (Port: 8084)
+- **api-gateway**: API Gateway for routing and security (Port: 8080)
 
-This project is a Spring Boot microservices-based backend for a Clinic Management System.
-It demonstrates service discovery, independent services, database isolation, and inter-service communication.
+Each service is a standalone Spring Boot project with its own Maven build and database (where applicable).
+
+---
 
-⚠️ This README covers all backend services EXCEPT the API Gateway.
+## 527 Tech Stack
 
-🧩 Architecture Overview
+- Java 21
+- Spring Boot 3.2.x
+- Spring Cloud Netflix Eureka
+- Spring Cloud Gateway
+- Spring Data JPA
+- MySQL
+- Maven
+- Postman
 
-The system consists of 4 backend components:
+---
 
-Eureka Server – Service Registry
+## 4da Service Overview
 
-Doctor Service – Manages doctors
+### 1. Eureka Server
+- **Purpose:** Central registry for all microservices (service discovery)
+- **Port:** 8761
+- **Dashboard:** http://localhost:8761
 
-Patient Service – Manages patients
+### 2. Doctor Service
+- **Purpose:** Manages doctor information
+- **Port:** 8081
+- **Database:** MySQL (doctor)
+- **Endpoints:** `/doctors`, `/doctors/{id}` (CRUD)
 
-Appointment Service – Manages appointments and coordinates between doctors and patients
+### 3. Patient Service
+- **Purpose:** Manages patient information
+- **Port:** 8082
+- **Database:** MySQL (patient)
+- **Endpoints:** `/patients`, `/patients/{id}` (CRUD)
 
-Each service:
+### 4. Appointment Service
+- **Purpose:** Manages appointments, coordinates between Doctor and Patient services
+- **Port:** 8083
+- **Database:** MySQL (appointment)
+- **Endpoints:** `/appointments`, `/appointments/{id}` (CRUD)
 
-Runs independently
+### 5. Notification Service
+- **Purpose:** Sends notifications (e.g., appointment reminders)
+- **Port:** 8084
 
-Has its own database
+### 6. API Gateway
+- **Purpose:** Single entry point for all APIs, routing, and security
+- **Port:** 8080
+- **Routes:** `/doctors/**`, `/patients/**`, `/appointments/**` (see `api-gateway/src/main/resources/application.yml`)
 
-Registers with Eureka
+---
 
-Communicates via REST APIs
+## 4e6 Build & Run Instructions
 
-🛠 Tech Stack
+**Prerequisites:**
+- Java 21
+- Maven
+- MySQL running with databases for each service (doctor, patient, appointment)
 
-Java 21
+**Build All Services:**
 
-Spring Boot 3.2.x
+You must build each service separately. Open a terminal in the root of each service folder and run:
 
-Spring Cloud Netflix Eureka
+```sh
+mvn clean install
+```
 
-Spring Data JPA
+**Order to Build & Run:**
 
-MySQL
+1. **Eureka Server**
+    - `cd eureka-server`
+    - `mvn spring-boot:run`
+2. **Doctor Service**
+    - `cd doctor-service`
+    - `mvn spring-boot:run`
+3. **Patient Service**
+    - `cd patient-service`
+    - `mvn spring-boot:run`
+4. **Appointment Service**
+    - `cd appointment-service`
+    - `mvn spring-boot:run`
+5. **Notification Service**
+    - `cd notification-service`
+    - `mvn spring-boot:run`
+6. **API Gateway**
+    - `cd api-gateway`
+    - `mvn spring-boot:run`
 
-Maven
+**Note:**
+- Wait for each service to start before launching the next.
+- All services must register with Eureka before the API Gateway can route requests.
 
-Postman
+---
 
-📌 Services Description
-1️⃣ Eureka Server (Service Registry)
+## 50e Testing
 
-Purpose
+- Use the provided Postman collections:
+  - `Clinic System - API Gateway (8080).postman_collection.json`
+  - `Clinic System - CRUD (Direct Services).postman_collection.json`
+- Each service exposes REST endpoints for full CRUD operations.
+- You can test each service independently or via the API Gateway.
 
-Central registry where all microservices register themselves
+---
 
-Enables service discovery without hardcoded URLs
+## 4a1 Microservices Principles Demonstrated
 
-Port
-8761
+- Service Discovery (Eureka)
+- Independent microservices
+- Database per service
+- REST-based inter-service communication
+- API Gateway pattern
+- Scalable, modular backend architecture
 
-Access Dashboard
-http://localhost:8761
+---
 
-2️⃣ Doctor Service
+## 680 Future Enhancements
 
-Purpose
+- Frontend (React / Angular)
+- Security (JWT Authentication)
+- CORS configuration
+- Centralized logging & monitoring
 
-Manages doctor information
+---
 
-Port
-8081
+## 464 Author
 
-Database
-
-MySQL (doctor database)
-
-Endpoints
-
-POST /doctors
-
-GET /doctors
-
-GET /doctors/{id}
-
-PUT /doctors/{id}
-
-DELETE /doctors/{id}
-
-Sample JSON
-
-{
-  "name": "Dr. Sharma",
-  "specialization": "Cardiology",
-  "available": true
-}
-
-3️⃣ Patient Service
-
-Purpose
-
-Manages patient information
-
-Port
-8082
-
-Database
-
-MySQL (patient database)
-
-Endpoints
-
-POST /patients
-
-GET /patients
-
-GET /patients/{id}
-
-PUT /patients/{id}
-
-DELETE /patients/{id}
-
-Sample JSON
-
-{
-  "name": "Amit Verma",
-  "age": 30,
-  "gender": "Male"
-}
-
-4️⃣ Appointment Service
-
-Purpose
-
-Manages appointments
-
-Coordinates between Doctor and Patient services
-
-Port
-8083
-
-Database
-
-MySQL (appointment database)
-
-Inter-Service Communication
-
-Uses RestTemplate to call:
-
-Doctor Service
-
-Patient Service
-
-Endpoints
-
-POST /appointments
-
-GET /appointments
-
-GET /appointments/{id}
-
-DELETE /appointments/{id}
-
-Sample JSON
-
-{
-  "doctorId": 1,
-  "patientId": 1,
-  "appointmentDate": "2025-12-20"
-}
-
-🔁 Microservices Communication Rules
-
-Services do NOT share databases
-
-Services do NOT share entities
-
-Communication happens ONLY via REST APIs
-
-Appointment Service acts as the coordinator
-
-This follows proper microservices architecture principles.
-
-▶️ How to Run the System
-Step 1: Start Eureka Server
-cd eureka-server
-mvn spring-boot:run
-
-Step 2: Start Doctor Service
-cd doctor-service
-mvn spring-boot:run
-
-Step 3: Start Patient Service
-cd patient-service
-mvn spring-boot:run
-
-Step 4: Start Appointment Service
-cd appointment-service
-mvn spring-boot:run
-
-🧪 Testing
-
-APIs are tested using Postman
-
-Each service can be tested independently
-
-Full CRUD operations are supported
-
-🎯 Key Concepts Demonstrated
-
-Service Discovery using Eureka
-
-Independent microservices
-
-Database per service
-
-REST-based inter-service communication
-
-Scalable backend architecture
-
-🚀 Future Enhancements
-
-API Gateway
-
-Frontend (React / Angular)
-
-Security (JWT Authentication)
-
-CORS configuration
-
-Centralized logging
-
-👨‍💻 Author
-
-Pranshu Saraswat
-BE Computer Science
+Pranshu Saraswat  
+BE Computer Science  
 Clinic Management System – Microservices Project
