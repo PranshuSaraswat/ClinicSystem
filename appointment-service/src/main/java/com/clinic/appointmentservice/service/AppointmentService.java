@@ -7,6 +7,8 @@ import com.clinic.appointmentservice.entity.Appointment;
 import com.clinic.appointmentservice.repository.AppointmentRepository;
 import com.clinic.appointmentservice.model.Notification;
 
+import com.clinic.appointmentservice.model.PatientDTO;
+import com.clinic.appointmentservice.model.DoctorDTO;
 
 @Service
 public class AppointmentService {
@@ -21,34 +23,32 @@ public class AppointmentService {
 
     public Appointment bookAppointment(Appointment appointment) {
 
-    // Check patient exists
-        restTemplate.getForObject(
+        PatientDTO patient = restTemplate.getForObject(
             "http://PATIENT-SERVICE/patients/" + appointment.getPatientId(),
-            Object.class
+            PatientDTO.class
         );
 
-    // Check doctor exists
-        restTemplate.getForObject(
+        DoctorDTO doctor = restTemplate.getForObject(
             "http://DOCTOR-SERVICE/doctors/" + appointment.getDoctorId(),
-            Object.class
+            DoctorDTO.class
         );
 
-    // Save appointment
         Appointment saved = repo.save(appointment);
 
-    // Send notification
         Notification notification = new Notification(
-            "Appointment booked successfully",
-            "Patient ID: " + appointment.getPatientId()
+            "Appointment booked successfully.\n\n"
+            + "Patient: " + patient.getName() + " (ID: " + patient.getId() + ")\n"
+            + "Doctor: " + doctor.getName() + " (ID: " + doctor.getId() + ")\n"
+            + "Appointment Date: " + appointment.getAppointmentDate(),
+            "patient"
         );
 
         restTemplate.postForObject(
             "http://NOTIFICATION-SERVICE/notifications",
             notification,
-        Void.class
+            Void.class
         );
 
         return saved;
     }
-
 }
