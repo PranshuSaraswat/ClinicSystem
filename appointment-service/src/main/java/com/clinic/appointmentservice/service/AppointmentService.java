@@ -23,32 +23,47 @@ public class AppointmentService {
 
     public Appointment bookAppointment(Appointment appointment) {
 
-        PatientDTO patient = restTemplate.getForObject(
-            "http://PATIENT-SERVICE/patients/" + appointment.getPatientId(),
-            PatientDTO.class
-        );
 
-        DoctorDTO doctor = restTemplate.getForObject(
-            "http://DOCTOR-SERVICE/doctors/" + appointment.getDoctorId(),
-            DoctorDTO.class
-        );
+    PatientDTO patient = restTemplate.getForObject(
+        "http://PATIENT-SERVICE/patients/" + appointment.getPatientId(),
+        PatientDTO.class
+    );
 
-        Appointment saved = repo.save(appointment);
+  
+    DoctorDTO doctor = restTemplate.getForObject(
+        "http://DOCTOR-SERVICE/doctors/" + appointment.getDoctorId(),
+        DoctorDTO.class
+    );
 
-        Notification notification = new Notification(
-            "Appointment booked successfully.\n\n"
-            + "Patient: " + patient.getName() + " (ID: " + patient.getId() + ")\n"
-            + "Doctor: " + doctor.getName() + " (ID: " + doctor.getId() + ")\n"
-            + "Appointment Date: " + appointment.getAppointmentDate(),
-            "patient"
-        );
 
-        restTemplate.postForObject(
-            "http://NOTIFICATION-SERVICE/notifications",
-            notification,
-            Void.class
-        );
+    Appointment saved = repo.save(appointment);
 
-        return saved;
-    }
+
+    restTemplate.postForObject(
+        "http://BILLING-SERVICE/bills?appointmentId="
+            + saved.getId()
+            + "&patientId="
+            + saved.getPatientId(),
+        null,
+        Object.class
+    );
+
+
+    Notification notification = new Notification(
+        "Appointment booked successfully.\n\n"
+        + "Patient: " + patient.getName() + "\n"
+        + "Doctor: " + doctor.getName() + "\n"
+        + "Date: " + saved.getAppointmentDate(),
+        "patient"
+    );
+
+    restTemplate.postForObject(
+        "http://NOTIFICATION-SERVICE/notifications",
+        notification,
+        Void.class
+    );
+
+    return saved;
+}
+
 }
