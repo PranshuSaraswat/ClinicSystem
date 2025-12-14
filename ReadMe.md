@@ -1,10 +1,17 @@
-0d1 Clinic Management System 3e5 4bb
+# 🏥 Clinic Management System – Microservices Project
 
-This project is a **Spring Boot microservices-based backend** for a Clinic Management System. It demonstrates service discovery, independent services, database isolation, inter-service communication, and API Gateway routing.
+This project is a **complete full-stack Clinic Management System** built with Spring Boot microservices backend and a modern HTML/CSS/JavaScript frontend. It demonstrates service discovery, independent services, database isolation, inter-service communication, and API Gateway routing.
+
+## ✨ What's New
+- 🎨 **Modern Web Frontend** - Complete HTML/CSS/JavaScript interface
+- 🔄 **Full CRUD Operations** - Manage doctors, patients, appointments, and billing
+- 📊 **Real-time Dashboard** - Live statistics and monitoring
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+- 🚀 **Quick Start Scripts** - PowerShell and Batch scripts to start all services
 
 ---
 
-## 4c1 Monorepo Structure
+## 🏗️ Monorepo Structure
 
 This repository contains the following microservices:
 
@@ -12,23 +19,32 @@ This repository contains the following microservices:
 - **doctor-service**: Manages doctors (Port: 8081)
 - **patient-service**: Manages patients (Port: 8082)
 - **appointment-service**: Manages appointments (Port: 8083)
-- **notification-service**: Sends notifications (Port: 8084)
-- **api-gateway**: API Gateway for routing and security (Port: 8080)
+- **billing-service**: Manages billing (Port: 8084)
+- **notification-service**: Sends email notifications (Port: 8085)
+- **api-gateway**: API Gateway for routing (Port: 8080)
+- **frontend**: Modern web interface (HTML/CSS/JavaScript)
 
 Each service is a standalone Spring Boot project with its own Maven build and database (where applicable).
 
 ---
 
-## 527 Tech Stack
+## 🛠️ Tech Stack
 
+### Backend
 - Java 21
 - Spring Boot 3.2.x
-- Spring Cloud Netflix Eureka
-- Spring Cloud Gateway
+- Spring Cloud Netflix Eureka (Service Discovery)
+- Spring Cloud Gateway (API Gateway)
 - Spring Data JPA
-- MySQL
+- MySQL / H2 Database
 - Maven
-- Postman
+- JavaMailSender (Email notifications)
+
+### Frontend
+- HTML5
+- CSS3 (Modern, responsive design)
+- Vanilla JavaScript (ES6+)
+- Fetch API for RESTful communication
 
 ---
 
@@ -51,20 +67,53 @@ Each service is a standalone Spring Boot project with its own Maven build and da
 - **Database:** MySQL (patient)
 - **Endpoints:** `/patients`, `/patients/{id}` (CRUD)
 
-### 4. Appointment Service
-- **Purpose:** Manages appointments, coordinates between Doctor and Patient services
+### 4. Appointment Service (Orchestrator)
+- **Purpose:** Manages appointments, coordinates between Doctor, Patient, Billing, and Notification services
 - **Port:** 8083
-- **Database:** MySQL (appointment)
-- **Endpoints:** `/appointments`, `/appointments/{id}` (CRUD)
+- **Database:** MySQL (appointment_db)
+- **Endpoints:** 
+  - `GET /appointments` - List all appointments
+  - `POST /appointments` - Book appointment (triggers billing & notification)
+  - `GET /appointments/{id}` - Get appointment by ID
+  - `DELETE /appointments/{id}` - Cancel appointment
 
-### 5. Notification Service
-- **Purpose:** Sends notifications (e.g., appointment reminders)
+### 5. Billing Service
+- **Purpose:** Manages financial records and billing
 - **Port:** 8084
+- **Database:** MySQL (billing_db)
+- **Endpoints:**
+  - `POST /bills?appointmentId={id}&patientId={id}` - Create bill
+  - `GET /bills/{id}` - Get bill by ID
+  - `GET /bills/patient/{patientId}` - Get all bills for a patient
+  - `PUT /bills/{id}/pay` - Mark bill as paid
+  - `DELETE /bills/{id}` - Delete bill
 
-### 6. API Gateway
-- **Purpose:** Single entry point for all APIs, routing, and security
+### 6. Notification Service
+- **Purpose:** Sends email notifications for appointments
+- **Port:** 8085
+- **Features:** JavaMailSender integration, SMTP configuration
+
+### 7. API Gateway
+- **Purpose:** Single entry point for all APIs, routing requests to appropriate services
 - **Port:** 8080
-- **Routes:** `/doctors/**`, `/patients/**`, `/appointments/**` (see `api-gateway/src/main/resources/application.yml`)
+- **Routes:** 
+  - `/doctors/**` → Doctor Service
+  - `/patients/**` → Patient Service
+  - `/appointments/**` → Appointment Service
+  - `/bills/**` → Billing Service
+
+### 8. Frontend (NEW! 🎉)
+- **Purpose:** Complete web interface for all operations
+- **Technology:** HTML5, CSS3, Vanilla JavaScript
+- **Features:**
+  - Doctor management (Create, Read, Update, Delete)
+  - Patient management (Create, Read, Update, Delete)
+  - Appointment booking with date picker
+  - Billing management with search by patient
+  - Real-time dashboard with statistics
+  - Toast notifications for user feedback
+  - Loading overlays for better UX
+  - Fully responsive design
 
 ---
 
