@@ -26,7 +26,8 @@ public class BillingService {
     }
 
     public Bill getBillById(Long id) {
-        return repo.findById(id).orElse(null);
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
     }
 
     public List<Bill> getBillsByPatient(Long patientId) {
@@ -34,12 +35,10 @@ public class BillingService {
     }
 
     public Bill markAsPaid(Long id) {
-        Bill bill = repo.findById(id).orElse(null);
-        if (bill != null) {
-            bill.setStatus("PAID");
-            return repo.save(bill);
-        }
-        return null;
+        Bill bill = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+        bill.setStatus("PAID");
+        return repo.save(bill);
     }
 
     public void deleteBill(Long id) {
